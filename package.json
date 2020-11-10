@@ -1,0 +1,31 @@
+{
+  "name": "follow-me-game",
+  "version": "1.0.0",
+  "description": "websocket based client server follow me game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build tsconfig.json",
+    "postbuild": "cp -r ./node_modules ./dist",
+    "start:server": "npm run build && IS_SERVER=true node ./dist/game.js",
+    "start:client": "npm run build && IS_SERVER=false node ./dist/game.js"
+  },
+  "keywords": [
+    "websockets",
+    "game"
+  ],
+  "author": "yogesh jadhav",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "reflect-metadata": "^0.1.13",
+    "ws": "^7.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.7",
+    "@types/websocket": "^1.0.1",
+    "@types/ws": "^7.4.0",
+    "isomorphic-ws": "^4.0.1",
+    "typescript": "^4.0.5"
+  }
+}
