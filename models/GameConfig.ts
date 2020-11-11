@@ -1,5 +1,7 @@
 export default class GameConfig {
-    port: number;
+    clientPort: number;
+    serverPort: number;
+    serverUrl: string;
     maxScore: number;
     minScore: number;
     timeOutInSeconds: number;

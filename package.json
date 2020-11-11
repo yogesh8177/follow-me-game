@@ -8,7 +8,8 @@
     "build": "tsc --build tsconfig.json",
     "postbuild": "cp -r ./node_modules ./dist",
     "start:server": "npm run build && IS_SERVER=true node ./dist/game.js",
-    "start:client": "npm run build && IS_SERVER=false node ./dist/game.js"
+    "start:client": "npm run build && IS_SERVER=false node ./dist/game.js",
+    "start": "npm run build && node ./dist/game.js"
   },
   "keywords": [
     "websockets",

@@ -3,7 +3,9 @@ dotenv.config();
 import GameConfig from '../models/GameConfig';
 
 const configObject: GameConfig = {
-  port: parseInt(process.env.PORT),
+  clientPort: parseInt(process.env.CLIENT_PORT),
+  serverPort: parseInt(process.env.SERVER_PORT),
+  serverUrl: process.env.SERVER_URL,
   isServer: process.env.IS_SERVER === 'true' ? true : false,
   maxScore: parseInt(process.env.MAX_SCORE) || 10,
   minScore: parseInt(process.env.MIN_SCORE) || -3,
