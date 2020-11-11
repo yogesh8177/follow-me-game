@@ -80,7 +80,6 @@ export default class Client extends ServerAbstract {
 
     infoMessage(message, serverSocket) {
         console.log(message.data);
-        console.log('local score: ', this.currentScore);
     }
 
     resetTimer() {

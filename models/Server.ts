@@ -5,23 +5,26 @@ import {config} from '../decorators/decorators';
 import ServerAbstract from '../models/ServerAbstract';
 import {Instruction, InstructionState} from './Instruction';
 import { Message, MessageType } from '../models/Message';
-import { timeStamp } from 'console';
+import { EventEmitter } from 'events';
 
 @config
 export default class Server extends ServerAbstract {
 
     private wsServer: ws.Server;
     private currentSocket: WebSocket;
-    gameConfig: GameConfig;
-    currentScore: number = 0;
-    currentInstruction: Instruction;
+    private gameConfig: GameConfig;
+    private currentScore: number = 0;
+    private currentTotalTimeouts: number = 0;
+    private currentInstruction: Instruction;
     private messageHandlerMap;
+    private instructionEventEmitter: EventEmitter;
 
     constructor(private config?: GameConfig) { 
         super(); 
         this.messageHandlerMap = {
             [MessageType.INSTRUCTION]: 'calculateScore'
         };
+        this.instructionEventEmitter = new EventEmitter();
     }
 
     initWebServer() {
@@ -50,13 +53,29 @@ export default class Server extends ServerAbstract {
     }
 
     sendInstruction(key) {
-        let instruction = new Instruction('server');
-        instruction.key = key;
-        //instruction.timeoutInSeconds = 10;
-        this.currentInstruction = instruction;
-        //console.log('sending instruction', instruction);
-        let message: Message = { type:  MessageType.INSTRUCTION, data: instruction};
-        this.currentSocket.send(JSON.stringify(message));
+        if (this.currentSocket) {
+            this.currentInstruction?.eventEmitter.removeAllListeners();
+            let instruction = new Instruction('server', this.instructionEventEmitter);
+            instruction.key = key;
+            instruction.eventEmitter.on('timeout', timeStamp => this.validateTimeouts(this, timeStamp));
+            //instruction.timeoutInSeconds = 10;
+            this.currentInstruction = instruction;
+            //console.log('sending instruction', instruction);
+            let message: Message = { type:  MessageType.INSTRUCTION, data: instruction};
+            this.sendViaSocket(this.currentSocket, message);
+        }
+    }
+
+    validateTimeouts(self, timeStamp) {
+        this.currentTotalTimeouts++;
+        //console.log({totalTimeouts: this.currentTotalTimeouts, timeStamp});
+        if (this.currentTotalTimeouts >= this.config.maxTimeoutMisses) {
+            this.resetScore();
+            let overMessage = self.generateInfoMessage('Game over due to timeouts!');
+            console.log('Game over due to timeouts!');
+            self.currentSocket.send(JSON.stringify(overMessage));
+            self.syncScore(self.currentSocket);
+        }
     }
 
     generateInfoMessage(payload): Message {
@@ -69,14 +88,14 @@ export default class Server extends ServerAbstract {
             let infoMessage = this.generateInfoMessage('client sent key before we have initialized our instruction');
             
             console.log(infoMessage.data);
-            clientSocket.send(JSON.stringify(infoMessage));
+            this.sendViaSocket(clientSocket, infoMessage);
             return;
         }
 
         if (this.currentInstruction.state === InstructionState.EXPIRED) {
             let infoMessage = this.generateInfoMessage('timeout! You replied late!' );
             console.log(infoMessage.data);
-            clientSocket.send(JSON.stringify(infoMessage));
+            this.sendViaSocket(clientSocket, infoMessage);
             return;
         }
 
@@ -86,7 +105,7 @@ export default class Server extends ServerAbstract {
         ) {
             let infoMessage = this.generateInfoMessage('You have already answered! Wait for the next instruction!');
             console.log(infoMessage.data);
-            clientSocket.send(JSON.stringify(infoMessage));
+            this.sendViaSocket(clientSocket, infoMessage);
             return;
         }
 
@@ -97,7 +116,7 @@ export default class Server extends ServerAbstract {
             if (this.currentScore >= this.config.maxScore) {
                 console.log('Client won!!');
                 let winMessage = this.generateInfoMessage("##############     You win!!!!    #############");
-                clientSocket.send(JSON.stringify(winMessage));
+                this.sendViaSocket(clientSocket, winMessage);
                 this.resetScore();
             }
             this.syncScore(clientSocket);
@@ -108,7 +127,7 @@ export default class Server extends ServerAbstract {
             if (this.currentScore <= this.config.minScore) {
                 console.log('Game over!!');
                 let looseMessage = this.generateInfoMessage("##############     You loose!!!!    #############");
-                clientSocket.send(JSON.stringify(looseMessage));
+                this.sendViaSocket(clientSocket, looseMessage);
                 this.resetScore();
             }
             this.syncScore(clientSocket);
@@ -124,7 +143,15 @@ export default class Server extends ServerAbstract {
             type: MessageType.SCORE,
             data: this.currentScore
         };
-        clientSocket.send(JSON.stringify(message));
+        this.sendViaSocket(clientSocket, message);
+    }
+
+    sendViaSocket(socket, payload) {
+        if (!socket) {
+            console.error('Client is not connected, please wait till a client connects!');
+            return;
+        }
+        socket.send(JSON.stringify(payload));
     }
 
     resetScore() {
