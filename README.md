@@ -13,6 +13,15 @@ point on correct, `-1 on a wrong key` and `0 for timeouts`.
 1. Each score update should send the score back to the connected client.
 1. The client should also know the timeout value for each instruction received.
 
+# Project structure
+
+- `$PROJECT_ROOT`
+  - `decorators` (decorator helpers)
+  - `dist` (generated after you run build or run commands)
+  - `models` (classes and models)
+  - `.env.example` (sample env file to generate .env)
+  - `game.ts` (main entry file)
+
 # Steps to run
 
 ## Setup env file
@@ -40,3 +49,9 @@ SERVER_URL=ws://localhost:3001
 1. Client: `npm run start:client`
 
 > Note: Make sure to run client and server in separate terminal windows/tabs.
+
+# Possible next steps
+
+- Instead of setting `TIMEOUT_IN_SECONDS` for each instruction in .env file, randomly assign that value. Provision is made available to pass `TIMEOUT_IN_SECONDS` as a dynamic value in the `Instruction` model. A small function or utility to make it dynamic will help!
+
+- Improve the UX for client and server!

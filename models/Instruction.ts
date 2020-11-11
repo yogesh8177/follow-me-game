@@ -8,14 +8,14 @@ export class Instruction {
     timeoutInSeconds: number;
     eventEmitter: EventEmitter;
 
-    constructor (source, eventEmitter?: EventEmitter, timeout?: number) {
+    constructor (source, timeout?: number) {
         this.source = source;
+        this.eventEmitter = new EventEmitter();
         this.timeStamp = new Date().getTime();
         this.state = InstructionState.VALID;
         this.timeoutInSeconds = parseInt(process.env.TIMEOUT_IN_SECONDS) || 8;
         this.timeoutInSeconds = timeout ? timeout : this.timeoutInSeconds;
         this.source === 'server' && this.initCountDown();
-        this.eventEmitter = eventEmitter;
     };
 
 

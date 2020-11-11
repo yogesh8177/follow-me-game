@@ -71,12 +71,16 @@ export default class Client extends ServerAbstract {
     }
 
     instructionReceiver (message, serverSocket) {
+        console.log('----------------------------------------------------');
         console.log(`client: instruction received: "${message.data.key}"`);
+        console.log('----------------------------------------------------');
     }
 
     syncScore(message, serverSocket) {
         this.currentScore = message.data;
+        console.log('----------------------------------');
         console.log(`Total score: ${this.currentScore}`);
+        console.log('----------------------------------');
     }
 
     infoMessage(message, serverSocket) {

@@ -17,14 +17,12 @@ export default class Server extends ServerAbstract {
     private currentTotalTimeouts: number = 0;
     private currentInstruction: Instruction;
     private messageHandlerMap;
-    private instructionEventEmitter: EventEmitter;
 
     constructor(private config?: GameConfig) { 
         super(); 
         this.messageHandlerMap = {
             [MessageType.INSTRUCTION]: 'calculateScore'
         };
-        this.instructionEventEmitter = new EventEmitter();
         console.log('Server instance created');
     }
 
@@ -35,6 +33,7 @@ export default class Server extends ServerAbstract {
         this.wsServer = new ws.Server({port: this.config.serverPort, noServer: true});
         this.wsServer.on('connection', socket => {
             console.log('Server: client connected!');
+            this.resetScore();
             this.currentSocket = socket;
             this.currentSocket.on('message', message => this.receiveMessage(message, this, this.currentSocket));
         });
@@ -55,8 +54,8 @@ export default class Server extends ServerAbstract {
 
     sendInstruction(key) {
         if (this.currentSocket) {
-            this.currentInstruction?.eventEmitter.removeAllListeners();
-            let instruction = new Instruction('server', this.instructionEventEmitter);
+            this.currentInstruction = null;
+            let instruction = new Instruction('server');
             instruction.key = key;
             instruction.eventEmitter.on('timeout', timeStamp => this.validateTimeouts(this, timeStamp));
             //instruction.timeoutInSeconds = 10;
