@@ -35,7 +35,7 @@ export default class Client extends ServerAbstract {
     receiveMessage(message, classInstance, server) {
         let jsonMessage: Message = JSON.parse(message);
         if (jsonMessage.type === MessageType.INSTRUCTION)
-            this.initCountDown();
+            this.initCountDown(jsonMessage.data.timeoutInSeconds);
         //console.log('client: message received', jsonMessage);
 
         if (classInstance.messageHandlerMap.hasOwnProperty(jsonMessage.type)) {
@@ -47,8 +47,8 @@ export default class Client extends ServerAbstract {
         }
     }
 
-    initCountDown() {
-        let timeoutPeriod  = this.config.timeOutInSeconds;
+    initCountDown(timeout: number) {
+        let timeoutPeriod  = timeout;
         let count = 1;
         this.countDownTimer = setInterval(() => {
             console.log(`You have ${timeoutPeriod - count} seconds to answer`);

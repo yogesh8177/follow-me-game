@@ -52,6 +52,7 @@ export default class Server extends ServerAbstract {
     sendInstruction(key) {
         let instruction = new Instruction('server');
         instruction.key = key;
+        //instruction.timeoutInSeconds = 10;
         this.currentInstruction = instruction;
         //console.log('sending instruction', instruction);
         let message: Message = { type:  MessageType.INSTRUCTION, data: instruction};
