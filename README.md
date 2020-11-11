@@ -20,7 +20,7 @@ point on correct, `-1 on a wrong key` and `0 for timeouts`.
 Create `.env` file from the given `$PROJECT_ROOT/.env.example` file. Below is a sample `.env` file structure.
 
 ```
-## Game config
+## Server config
 
 SERVER_PORT=3001
 MAX_SCORE=10
