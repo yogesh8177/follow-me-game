@@ -5,7 +5,6 @@ import {config} from '../decorators/decorators';
 import ServerAbstract from '../models/ServerAbstract';
 import {Instruction, InstructionState} from './Instruction';
 import { Message, MessageType } from '../models/Message';
-import { EventEmitter } from 'events';
 
 @config
 export default class Server extends ServerAbstract {
@@ -53,6 +52,10 @@ export default class Server extends ServerAbstract {
     }
 
     sendInstruction(key) {
+        if (this.currentInstruction?.state === InstructionState.VALID) {
+            console.log('Please wait for current instruction to complete!');
+            return;
+        }
         if (this.currentSocket) {
             this.currentInstruction = null;
             let instruction = new Instruction('server');
@@ -63,7 +66,9 @@ export default class Server extends ServerAbstract {
             //console.log('sending instruction', instruction);
             let message: Message = { type:  MessageType.INSTRUCTION, data: instruction};
             this.sendViaSocket(this.currentSocket, message);
+            return;
         }
+        console.log('OOps! something went wrong!');
     }
 
     validateTimeouts(timeStamp) {
