@@ -70,12 +70,14 @@ export default class Server extends ServerAbstract {
         this.currentTotalTimeouts++;
         //console.log({totalTimeouts: this.currentTotalTimeouts, timeStamp});
         if (this.currentTotalTimeouts >= this.config.maxTimeoutMisses) {
-            this.resetScore();
             let overMessage = self.generateInfoMessage('Game over due to timeouts!');
             console.log('Game over due to timeouts!');
             self.currentSocket.send(JSON.stringify(overMessage));
             self.syncScore(self.currentSocket);
+            this.resetScore();
+            return;
         }
+        self.syncScore(self.currentSocket);
     }
 
     generateInfoMessage(payload): Message {
@@ -83,7 +85,7 @@ export default class Server extends ServerAbstract {
     }
     
     calculateScore(message, clientSocket) {
-        console.log('executing calculate score', message);
+        //console.log('executing calculate score', message);
         if (!this.currentInstruction) {
             let infoMessage = this.generateInfoMessage('client sent key before we have initialized our instruction');
             
@@ -96,6 +98,7 @@ export default class Server extends ServerAbstract {
             let infoMessage = this.generateInfoMessage('timeout! You replied late!' );
             console.log(infoMessage.data);
             this.sendViaSocket(clientSocket, infoMessage);
+            this.syncScore(clientSocket);
             return;
         }
 
@@ -117,7 +120,9 @@ export default class Server extends ServerAbstract {
                 console.log('Client won!!');
                 let winMessage = this.generateInfoMessage("##############     You win!!!!    #############");
                 this.sendViaSocket(clientSocket, winMessage);
+                this.syncScore(clientSocket);
                 this.resetScore();
+                return;
             }
             this.syncScore(clientSocket);
         }
@@ -128,7 +133,9 @@ export default class Server extends ServerAbstract {
                 console.log('Game over!!');
                 let looseMessage = this.generateInfoMessage("##############     You loose!!!!    #############");
                 this.sendViaSocket(clientSocket, looseMessage);
+                this.syncScore(clientSocket);
                 this.resetScore();
+                return;
             }
             this.syncScore(clientSocket);
         }
@@ -156,6 +163,7 @@ export default class Server extends ServerAbstract {
 
     resetScore() {
         this.currentScore = 0;
+        this.currentTotalTimeouts = 0;
         this.currentInstruction = null;
     }
 }

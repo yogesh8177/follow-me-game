@@ -4,17 +4,39 @@ A simple client server based game where we follow instructions provided by serve
 
 Following are the game rules:
 
-1. When a key is pressed in server (instruction), the client receives it; and has a timer
-counting up to X seconds in which the same key has to be pressed.
+1. When a `key is pressed` in server (instruction), the client receives it; and has a timer.
+counting up to `X seconds` in which the same key has to be pressed.
 1. The server verifies if the keypress sent by client matched “the instruction” and assign +1
-point on correct, -1 on a wrong key and 0 for timeouts.
-1. The game is over when the score reaches either +10 points or -3 points.
-1. The game is also over if the client does not respond for 3 continuous instructions.
+point on correct, `-1 on a wrong key` and `0 for timeouts`.
+1. The game is over when the score reaches either `+10 points` or `-3 points`.
+1. The game is also over if the client does not respond for `3 continuous instructions`.
 1. Each score update should send the score back to the connected client.
 1. The client should also know the timeout value for each instruction received.
 
 # Steps to run
 
+## Setup env file
+
+Create `.env` file from the given `$PROJECT_ROOT/.env.example` file. Below is a sample `.env` file structure.
+
+```
+## Game config
+
+SERVER_PORT=3001
+MAX_SCORE=10
+MIN_SCORE=-3
+TIMEOUT_IN_SECONDS=5
+MAX_TIMEOUT_MISSES=3
+
+# Client config
+CLIENT_PORT=3000
+SERVER_URL=ws://localhost:3001
+```
+
+## Commands to run
+
 1. `npm install`
 1. Server: `npm run start:server`
 1. Client: `npm run start:client`
+
+> Note: Make sure to run client and server in separate terminal windows/tabs.

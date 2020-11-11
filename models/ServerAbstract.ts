@@ -1,8 +1,3 @@
-import * as ws from 'ws';
-import WebSocket from 'isomorphic-ws';
-import {Instruction, InstructionState} from './Instruction';
-import { Message, MessageType } from './Message';
-
 import * as readline from 'readline';
 
 readline.emitKeypressEvents(process.stdin);

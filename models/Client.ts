@@ -48,7 +48,7 @@ export default class Client extends ServerAbstract {
     }
 
     initCountDown(timeout: number) {
-        let timeoutPeriod  = timeout;
+        let timeoutPeriod  = timeout; // 1 extra for padding..
         let count = 1;
         this.countDownTimer = setInterval(() => {
             console.log(`You have ${timeoutPeriod - count} seconds to answer`);
@@ -57,7 +57,7 @@ export default class Client extends ServerAbstract {
                 console.log('timed out!');
                 clearInterval(this.countDownTimer);
             }
-        }, 1000);
+        }, 900);
     }
 
     sendInstruction(key) {
@@ -70,7 +70,7 @@ export default class Client extends ServerAbstract {
     }
 
     instructionReceiver (message, serverSocket) {
-        console.log('client: instruction received', message.data.key);
+        console.log(`client: instruction received: "${message.data.key}"`);
     }
 
     syncScore(message, serverSocket) {
