@@ -27,7 +27,6 @@ export default class Server extends ServerAbstract {
     }
 
     initWebServer() {
-        let self = this;
         this.initKeyPressHandler();
         this.gameConfig = this.config;
         this.wsServer = new ws.Server({port: this.config.serverPort, noServer: true});
@@ -35,16 +34,17 @@ export default class Server extends ServerAbstract {
             console.log('Server: client connected!');
             this.resetScore();
             this.currentSocket = socket;
-            this.currentSocket.on('message', message => this.receiveMessage(message, this, this.currentSocket));
+            this.currentSocket.on('message', message => this.receiveMessage(message, this.currentSocket));
         });
     }
 
-    receiveMessage(message, classInstance, clientSocket) {
+    receiveMessage(message, clientSocket) {
         let jsonMessage = JSON.parse(message);
         //console.log('Server: message  received', jsonMessage);
-        if (classInstance.messageHandlerMap.hasOwnProperty(jsonMessage.type)) {
+        if (this.messageHandlerMap.hasOwnProperty(jsonMessage.type)) {
             // call respective message handler based on message type!
-            classInstance[classInstance.messageHandlerMap[jsonMessage.type]](jsonMessage, clientSocket);
+            let handlerName = this.messageHandlerMap[jsonMessage.type];
+            this[handlerName](jsonMessage, clientSocket);
         }
         else {
             console.error('unexpected message type encountered!');
@@ -57,7 +57,7 @@ export default class Server extends ServerAbstract {
             this.currentInstruction = null;
             let instruction = new Instruction('server');
             instruction.key = key;
-            instruction.eventEmitter.on('timeout', timeStamp => this.validateTimeouts(this, timeStamp));
+            instruction.eventEmitter.on('timeout', timeStamp => this.validateTimeouts(timeStamp));
             //instruction.timeoutInSeconds = 10;
             this.currentInstruction = instruction;
             //console.log('sending instruction', instruction);
@@ -66,18 +66,18 @@ export default class Server extends ServerAbstract {
         }
     }
 
-    validateTimeouts(self, timeStamp) {
+    validateTimeouts(timeStamp) {
         this.currentTotalTimeouts++;
         //console.log({totalTimeouts: this.currentTotalTimeouts, timeStamp});
         if (this.currentTotalTimeouts >= this.config.maxTimeoutMisses) {
-            let overMessage = self.generateInfoMessage('Game over due to timeouts!');
+            let overMessage = this.generateInfoMessage('Game over due to timeouts!');
             console.log('Game over due to timeouts!');
-            self.currentSocket.send(JSON.stringify(overMessage));
-            self.syncScore(self.currentSocket);
+            this.currentSocket.send(JSON.stringify(overMessage));
+            this.syncScore(this.currentSocket);
             this.resetScore();
             return;
         }
-        self.syncScore(self.currentSocket);
+        this.syncScore(this.currentSocket);
     }
 
     generateInfoMessage(payload): Message {

@@ -25,5 +25,5 @@ export default abstract class ServerAbstract {
     abstract sendInstruction(key);
 
     // receive message from client/server
-    abstract receiveMessage(message, instance: this, socket);
+    abstract receiveMessage(message, socket);
 }

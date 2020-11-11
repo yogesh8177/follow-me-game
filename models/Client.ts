@@ -30,17 +30,18 @@ export default class Client extends ServerAbstract {
             console.log('client: connected to server!');
             this.initKeyPressHandler();
         });
-        this.wsServer.on('message', message => this.receiveMessage(message, this, this.wsServer));
+        this.wsServer.on('message', message => this.receiveMessage(message, this.wsServer));
     }
 
-    receiveMessage(message, classInstance, server) {
+    receiveMessage(message, server) {
         let jsonMessage: Message = JSON.parse(message);
         if (jsonMessage.type === MessageType.INSTRUCTION)
             this.initCountDown(jsonMessage.data.timeoutInSeconds);
         //console.log('client: message received', jsonMessage);
 
-        if (classInstance.messageHandlerMap.hasOwnProperty(jsonMessage.type)) {
-            classInstance[classInstance.messageHandlerMap[jsonMessage.type]](jsonMessage, server);
+        if (this.messageHandlerMap.hasOwnProperty(jsonMessage.type)) {
+            let handlerName = this.messageHandlerMap[jsonMessage.type];
+            this[handlerName](jsonMessage, server);
         }
         else {
             console.error('unexpected message type encountered!');
