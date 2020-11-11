@@ -10,20 +10,12 @@ import Client from './models/Client';
 @config
 export class GameServer {
     
-    private client: Client;
-    private server: Server;
+    private server: Server | Client;
 
     constructor(private config?: GameConfig) {}
 
     initGameServer() {
-        if (!this.config.isServer) {
-            console.log('starting client...');
-            this.client = new Client(); 
-            this.client.initWebServer();
-            return;
-        }
-        console.log('starting server...');
-        this.server = new Server();
+        this.server = this.config.isServer ? new Server() : new Client();
         this.server.initWebServer();
     }
 }

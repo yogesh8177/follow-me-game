@@ -21,6 +21,7 @@ export default class Client extends ServerAbstract {
             [MessageType.SCORE]: 'syncScore',
             [MessageType.INFO]: 'infoMessage'
         };
+        console.log('Client instance created');
     }
 
     initWebServer() {

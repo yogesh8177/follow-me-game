@@ -25,6 +25,7 @@ export default class Server extends ServerAbstract {
             [MessageType.INSTRUCTION]: 'calculateScore'
         };
         this.instructionEventEmitter = new EventEmitter();
+        console.log('Server instance created');
     }
 
     initWebServer() {
