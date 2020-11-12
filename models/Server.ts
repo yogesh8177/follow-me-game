@@ -1,7 +1,7 @@
 import * as ws from 'ws';
 import WebSocket from 'isomorphic-ws';
 import GameConfig from './GameConfig';
-import {config} from '../decorators/decorators';
+import {config, syncScore} from '../decorators/decorators';
 import ServerAbstract from '../models/ServerAbstract';
 import {Instruction, InstructionState} from './Instruction';
 import { Message, MessageType } from '../models/Message';
@@ -71,6 +71,7 @@ export default class Server extends ServerAbstract {
         console.log('OOps! something went wrong!');
     }
 
+    @syncScore
     validateTimeouts(timeStamp) {
         this.currentTotalTimeouts++;
         //console.log({totalTimeouts: this.currentTotalTimeouts, timeStamp});
@@ -78,17 +79,16 @@ export default class Server extends ServerAbstract {
             let overMessage = this.generateInfoMessage('Game over due to timeouts!');
             console.log('Game over due to timeouts!');
             this.currentSocket.send(JSON.stringify(overMessage));
-            this.syncScore(this.currentSocket);
             this.resetScore();
             return;
         }
-        this.syncScore(this.currentSocket);
     }
 
     generateInfoMessage(payload): Message {
         return { type: MessageType.INFO, data: payload };
     }
-    
+
+    @syncScore
     calculateScore(message, clientSocket) {
         //console.log('executing calculate score', message);
         if (!this.currentInstruction) {
@@ -107,7 +107,6 @@ export default class Server extends ServerAbstract {
             let infoMessage = this.generateInfoMessage('timeout! You replied late!' );
             console.log(infoMessage.data);
             this.sendViaSocket(clientSocket, infoMessage);
-            this.syncScore(clientSocket);
             return;
         }
         let isInstructionAlreadyAnswered = currentInstructionState === InstructionState.FINISHED || 
@@ -148,21 +147,11 @@ export default class Server extends ServerAbstract {
         }
         else {
             console.log('Neither a win or a loss, lets continue playing..');
-            this.syncScore(clientSocket);
             return;
         }
         // we will arrive here if its a win or a loss!
         this.sendViaSocket(clientSocket, infoMessage);
-        this.syncScore(clientSocket);
         this.resetScore();
-    }
-
-    syncScore(clientSocket) {
-        let message: Message = {
-            type: MessageType.SCORE,
-            data: this.currentScore
-        };
-        this.sendViaSocket(clientSocket, message);
     }
 
     sendViaSocket(socket, payload) {
