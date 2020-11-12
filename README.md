@@ -2,7 +2,7 @@
 
 A simple client server based game where we follow instructions provided by server. We must respond with the appropriate instruction (key press) before the time runs out!
 
-Following are the game rules:
+# Game rules
 
 1. When a `key is pressed` in server (instruction), the client receives it; and has a timer.
 counting up to `X seconds` in which the same key has to be pressed.
