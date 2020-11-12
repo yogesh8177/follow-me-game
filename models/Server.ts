@@ -101,7 +101,7 @@ export default class Server extends ServerAbstract {
 
         let currentInstructionState = this.currentInstruction.state;
         let clientInstruction = message.data;
-        let isCurrentInstructionExpired = currentInstructionState === InstructionState.EXPIRED
+        let isCurrentInstructionExpired = (currentInstructionState === InstructionState.EXPIRED);
 
         if (isCurrentInstructionExpired) {
             let infoMessage = this.generateInfoMessage('timeout! You replied late!' );
@@ -123,34 +123,38 @@ export default class Server extends ServerAbstract {
         if (clientAndServerKeyMatch) {
             this.currentInstruction.state = InstructionState.FINISHED;
             this.currentScore++;
-
-            if (this.currentScore >= this.config.maxScore) {
-                console.log('Client won!!');
-                let winMessage = this.generateInfoMessage("##############     You win!!!!    #############");
-                this.sendViaSocket(clientSocket, winMessage);
-                this.syncScore(clientSocket);
-                this.resetScore();
-                return;
-            }
-            this.syncScore(clientSocket);
+            this.notifyWinOrLoss(clientSocket);
         }
         else if (!clientAndServerKeyMatch) {
             this.currentInstruction.state = InstructionState.WRONG;
             this.currentScore--;
-            if (this.currentScore <= this.config.minScore) {
-                console.log('Game over!!');
-                let looseMessage = this.generateInfoMessage("##############     You loose!!!!    #############");
-                this.sendViaSocket(clientSocket, looseMessage);
-                this.syncScore(clientSocket);
-                this.resetScore();
-                return;
-            }
-            this.syncScore(clientSocket);
+            this.notifyWinOrLoss(clientSocket);
         }
         else {
             console.log('unexpected flow!!');
         }
         console.log({currentScore: this.currentScore});
+    }
+
+    notifyWinOrLoss(clientSocket) {
+        let infoMessage: Message;
+        if (this.currentScore <= this.config.minScore) {
+            console.log('Game over!!');
+            infoMessage = this.generateInfoMessage("##############     You loose!!!!    #############");
+        }
+        else if (this.currentScore >= this.config.maxScore) {
+            console.log('Client won!!');
+            infoMessage = this.generateInfoMessage("##############     You win!!!!    #############");
+        }
+        else {
+            console.log('Neither a win or a loss, lets continue playing..');
+            this.syncScore(clientSocket);
+            return;
+        }
+        // we will arrive here if its a win or a loss!
+        this.sendViaSocket(clientSocket, infoMessage);
+        this.syncScore(clientSocket);
+        this.resetScore();
     }
 
     syncScore(clientSocket) {
