@@ -26,6 +26,12 @@ point on correct, `-1 on a wrong key` and `0 for timeouts`.
 
 # Steps to run
 
+Clone the git code:
+- `git clone https://github.com/yogesh8177/follow-me-game.git`
+- `cd follow-me-game`
+
+> $PROJECT_ROOT=<path/to/follow-me-game> will be used as a refrence to root folder in this doc.
+
 ## Setup env file
 
 Create `.env` file from the given `$PROJECT_ROOT/.env.example` file. Below is a sample `.env` file structure.
@@ -50,10 +56,18 @@ SERVER_URL=ws://localhost:3001
 1. Server: `npm run start:server`
 1. Client: `npm run start:client`
 
+Firsly start the server, once server boots up, then start the client. Presently only one client will be able to connect. Any new connections to server will be overriden and reset the game.
+
 > Note: Make sure to run client and server in separate terminal windows/tabs.
 
 # Possible next steps
 
 - Instead of setting `TIMEOUT_IN_SECONDS` for each instruction in .env file, randomly assign that value. Provision is made available to pass `TIMEOUT_IN_SECONDS` as a dynamic value in the `Instruction` model. A small function or utility to make it dynamic will help!
+
+- `One to many` mapping between `server:clients`.
+
+- Handle socket `disconnects` and `error` events on server and client respectively!
+
+- Implement connection `retry` mechanism!
 
 - Improve the UX for client and server!
