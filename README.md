@@ -29,6 +29,7 @@ point on correct, `-1 on a wrong key` and `0 for timeouts`.
 Clone the git code:
 - `git clone https://github.com/yogesh8177/follow-me-game.git`
 - `cd follow-me-game`
+- `npm install -g typescript` (to make tsc command work)
 
 > $PROJECT_ROOT=<path/to/follow-me-game> will be used as a refrence to root folder in this doc.
 
