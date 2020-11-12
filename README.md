@@ -72,3 +72,5 @@ Firsly start the server, once server boots up, then start the client. Presently 
 - Implement connection `retry` mechanism!
 
 - Improve the UX for client and server!
+
+- Edge cases where a client receives an already `expired instruction`. We do have `timeStamp` value for each instruction, however we may validate it on client to see if received instruction is already expired or not. 
