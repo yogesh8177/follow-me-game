@@ -99,25 +99,28 @@ export default class Server extends ServerAbstract {
             return;
         }
 
-        if (this.currentInstruction.state === InstructionState.EXPIRED) {
+        let currentInstructionState = this.currentInstruction.state;
+        let clientInstruction = message.data;
+        let isCurrentInstructionExpired = currentInstructionState === InstructionState.EXPIRED
+
+        if (isCurrentInstructionExpired) {
             let infoMessage = this.generateInfoMessage('timeout! You replied late!' );
             console.log(infoMessage.data);
             this.sendViaSocket(clientSocket, infoMessage);
             this.syncScore(clientSocket);
             return;
         }
-
-        if (
-            this.currentInstruction.state === InstructionState.FINISHED || 
-            this.currentInstruction.state === InstructionState.WRONG
-        ) {
+        let isInstructionAlreadyAnswered = currentInstructionState === InstructionState.FINISHED || 
+                                            currentInstructionState === InstructionState.WRONG
+        if (isInstructionAlreadyAnswered) {
             let infoMessage = this.generateInfoMessage('You have already answered! Wait for the next instruction!');
             console.log(infoMessage.data);
             this.sendViaSocket(clientSocket, infoMessage);
             return;
         }
+        let clientAndServerKeyMatch = clientInstruction.key === this.currentInstruction.key;
 
-        if (message.data.key === this.currentInstruction.key) {
+        if (clientAndServerKeyMatch) {
             this.currentInstruction.state = InstructionState.FINISHED;
             this.currentScore++;
 
@@ -131,7 +134,7 @@ export default class Server extends ServerAbstract {
             }
             this.syncScore(clientSocket);
         }
-        else if (message.data.key !== this.currentInstruction.key) {
+        else if (!clientAndServerKeyMatch) {
             this.currentInstruction.state = InstructionState.WRONG;
             this.currentScore--;
             if (this.currentScore <= this.config.minScore) {

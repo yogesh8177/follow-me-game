@@ -51,6 +51,7 @@ SERVER_URL=ws://localhost:3001
 ```
 
 ## Commands to run
+Assuming you are already inside `$PROJECT_ROOT`.
 
 1. `npm install`
 1. Server: `npm run start:server`
