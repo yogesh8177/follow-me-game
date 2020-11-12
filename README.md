@@ -13,6 +13,8 @@ point on correct, `-1 on a wrong key` and `0 for timeouts`.
 1. Each score update should send the score back to the connected client.
 1. The client should also know the timeout value for each instruction received.
 
+> Note: Right now only keyboard keys [a-z] and [0-9] are supported. 
+
 # Project structure
 
 - `$PROJECT_ROOT`
