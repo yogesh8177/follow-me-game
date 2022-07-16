@@ -65,7 +65,7 @@ Firsly start the server, once server boots up, then start the client. Presently 
 
 # Possible next steps
 
-- Instead of setting `TIMEOUT_IN_SECONDS` for each instruction in .env file, randomly assign that value. Provision is made available to pass `TIMEOUT_IN_SECONDS` as a dynamic value in the `Instruction` model. A small function or utility to make it dynamic will help!
+- Instead of setting `TIMEOUT_IN_SECONDS` for each instruction in .env file, randomly assign that value. Provision is made to pass `TIMEOUT_IN_SECONDS` as a dynamic value in the `Instruction` model. A small function or utility to make it dynamic will help!
 
 - `One to many` mapping between `server:clients`.
 
@@ -75,4 +75,4 @@ Firsly start the server, once server boots up, then start the client. Presently 
 
 - Improve the UX for client and server!
 
-- Edge cases where a client receives an already `expired instruction`. We do have `timeStamp` value for each instruction, we may validate using `timeStamp` on client to see if received instruction is already expired or not. All other edge cases similar to these needs to be handled. 
+- Edge cases like where a client receives an already `expired instruction`. We do have `timeStamp` value for each instruction, we may validate using `timeStamp` on the client to see if received instruction is already expired or not. All other edge cases similar to these needs to be handled. 
