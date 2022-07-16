@@ -30,6 +30,7 @@ Clone the git code:
 - `git clone https://github.com/yogesh8177/follow-me-game.git`
 - `cd follow-me-game`
 - `npm install -g typescript` (to make tsc command work)
+- `touch .env` (create .env file as given below)
 
 > $PROJECT_ROOT=<path/to/follow-me-game> will be used as a refrence to root folder in this doc.
 
